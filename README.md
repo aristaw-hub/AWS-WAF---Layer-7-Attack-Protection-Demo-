@@ -175,9 +175,3 @@ done
 - After successful blocking, you can switch rules back to **Block** mode.
 - Document false positives (if any) and use rule action overrides or exclusions.
 
-Would you like:
-- A ready-to-run bash script that performs all tests automatically and logs results?
-- Commands to switch rules to Count mode via AWS CLI?
-- How to interpret specific fields in WAF logs?
-
-Just let me know and I'll provide the next piece!
