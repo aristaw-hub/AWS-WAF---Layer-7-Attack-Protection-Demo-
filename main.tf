@@ -284,7 +284,7 @@ resource "aws_s3_bucket_policy" "waf_logs" {
 # -----------------------------------------------------
 resource "aws_wafv2_web_acl" "layer7_demo" {
   name        = "demo-layer7-full-stack"
-  description = "Full Layer 7 protection demo (SQLi, XSS, Brute-Force per /login, Bots)"
+  description = "Demo Layer 7 WAF protection for SQLi XSS Brute-Force on login and Bots"
   scope       = "REGIONAL"
 
   default_action {
