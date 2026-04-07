@@ -301,3 +301,177 @@ Connection: keep-alive
 
 Test completed at 2026-04-07 12:54:54
 Results saved to: waf_test_results.log
+==================================================
+WAF Attack Test Started at: 2026-04-07 12:55:48
+Target ALB: http://waf-demo-alb-1951029354.ap-southeast-1.elb.amazonaws.com
+==================================================
+1. SQL Injection Test (' OR 1=1 --)
+
+[SQLi Basic]
+Command: curl -X POST "http://waf-demo-alb-1951029354.ap-southeast-1.elb.amazonaws.com/login" -d "username=admin' OR '1'='1" -d "password=anything" -v -s
+<html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+</body>
+</html>
+----------------------------------------
+
+[SQLi UNION]
+Command: curl -X POST "http://waf-demo-alb-1951029354.ap-southeast-1.elb.amazonaws.com/login" -d "username=admin' UNION SELECT 1,2--" -v -s
+<html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+</body>
+</html>
+----------------------------------------
+2. Cross-Site Scripting (XSS) Test
+
+[XSS Script Tag]
+Command: curl -X POST "http://waf-demo-alb-1951029354.ap-southeast-1.elb.amazonaws.com/login" -d "comment=<script>alert(1)</script>" -v -s
+<html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+</body>
+</html>
+----------------------------------------
+
+[XSS onerror]
+Command: curl -X POST "http://waf-demo-alb-1951029354.ap-southeast-1.elb.amazonaws.com/login" -d "input=<img src=x onerror=alert(1)>" -v -s
+<html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+</body>
+</html>
+----------------------------------------
+3. Brute Force / Credential Stuffing Test (on /login only)
+Sending 150 rapid login attempts...
+403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 
+Brute force test completed. Check if you start getting 403 after ~100 requests.
+4. Bot Traffic Test
+
+[Bad Bot User-Agent]
+Command: curl -I --user-agent "BadBot/1.0; +http://evil.example.com" "http://waf-demo-alb-1951029354.ap-southeast-1.elb.amazonaws.com/" -v -s
+HTTP/1.1 403 Forbidden
+Server: awselb/2.0
+Date: Tue, 07 Apr 2026 04:56:01 GMT
+Content-Type: text/html
+Content-Length: 118
+Connection: keep-alive
+
+----------------------------------------
+
+[Scrapy Bot]
+Command: curl -I --user-agent "Mozilla/5.0 (compatible; Scrapy/2.0)" "http://waf-demo-alb-1951029354.ap-southeast-1.elb.amazonaws.com/" -v -s
+HTTP/1.1 403 Forbidden
+Server: awselb/2.0
+Date: Tue, 07 Apr 2026 04:56:02 GMT
+Content-Type: text/html
+Content-Length: 118
+Connection: keep-alive
+
+----------------------------------------
+
+[Python Urllib Bot]
+Command: curl -I --user-agent "Python-urllib/3.9" "http://waf-demo-alb-1951029354.ap-southeast-1.elb.amazonaws.com/" -v -s
+HTTP/1.1 403 Forbidden
+Server: awselb/2.0
+Date: Tue, 07 Apr 2026 04:56:02 GMT
+Content-Type: text/html
+Content-Length: 118
+Connection: keep-alive
+
+----------------------------------------
+
+Test completed at 2026-04-07 12:56:02
+Results saved to: waf_test_results.log
+==================================================
+WAF Attack Test Started at: 2026-04-07 13:04:00
+Target ALB: http://waf-demo-alb-1951029354.ap-southeast-1.elb.amazonaws.com
+==================================================
+1. SQL Injection Test (' OR 1=1 --)
+
+[SQLi Basic]
+Command: curl -X POST "http://waf-demo-alb-1951029354.ap-southeast-1.elb.amazonaws.com/login" -d "username=admin' OR '1'='1" -d "password=anything" -v -s
+<html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+</body>
+</html>
+----------------------------------------
+
+[SQLi UNION]
+Command: curl -X POST "http://waf-demo-alb-1951029354.ap-southeast-1.elb.amazonaws.com/login" -d "username=admin' UNION SELECT 1,2--" -v -s
+<html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+</body>
+</html>
+----------------------------------------
+2. Cross-Site Scripting (XSS) Test
+
+[XSS Script Tag]
+Command: curl -X POST "http://waf-demo-alb-1951029354.ap-southeast-1.elb.amazonaws.com/login" -d "comment=<script>alert(1)</script>" -v -s
+<html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+</body>
+</html>
+----------------------------------------
+
+[XSS onerror]
+Command: curl -X POST "http://waf-demo-alb-1951029354.ap-southeast-1.elb.amazonaws.com/login" -d "input=<img src=x onerror=alert(1)>" -v -s
+<html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+</body>
+</html>
+----------------------------------------
+3. Brute Force / Credential Stuffing Test (on /login only)
+Sending 150 rapid login attempts...
+403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 
+Brute force test completed. Check if you start getting 403 after ~100 requests.
+4. Bot Traffic Test
+
+[Bad Bot User-Agent]
+Command: curl -I --user-agent "BadBot/1.0; +http://evil.example.com" "http://waf-demo-alb-1951029354.ap-southeast-1.elb.amazonaws.com/" -v -s
+HTTP/1.1 403 Forbidden
+Server: awselb/2.0
+Date: Tue, 07 Apr 2026 05:04:13 GMT
+Content-Type: text/html
+Content-Length: 118
+Connection: keep-alive
+
+----------------------------------------
+
+[Scrapy Bot]
+Command: curl -I --user-agent "Mozilla/5.0 (compatible; Scrapy/2.0)" "http://waf-demo-alb-1951029354.ap-southeast-1.elb.amazonaws.com/" -v -s
+HTTP/1.1 403 Forbidden
+Server: awselb/2.0
+Date: Tue, 07 Apr 2026 05:04:13 GMT
+Content-Type: text/html
+Content-Length: 118
+Connection: keep-alive
+
+----------------------------------------
+
+[Python Urllib Bot]
+Command: curl -I --user-agent "Python-urllib/3.9" "http://waf-demo-alb-1951029354.ap-southeast-1.elb.amazonaws.com/" -v -s
+HTTP/1.1 403 Forbidden
+Server: awselb/2.0
+Date: Tue, 07 Apr 2026 05:04:14 GMT
+Content-Type: text/html
+Content-Length: 118
+Connection: keep-alive
+
+----------------------------------------
+
+Test completed at 2026-04-07 13:04:14
+Results saved to: waf_test_results.log

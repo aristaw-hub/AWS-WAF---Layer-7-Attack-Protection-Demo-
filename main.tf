@@ -291,13 +291,15 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
     allow {}
   }
 
-  # RULE 1: SQLi with custom exclusion (one rule set to COUNT for demo)
+  # ==============================================
+  # RULE 1: SQL Injection Protection (with overrides to COUNT)
+  # ==============================================
   rule {
     name     = "SQLInjectionProtection"
     priority = 10
 
     override_action {
-      none {}
+      none {}   # Important: keep none so individual rule overrides work
     }
 
     statement {
@@ -305,13 +307,26 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
         name        = "AWSManagedRulesSQLiRuleSet"
         vendor_name = "AWS"
 
-        # Custom exclusion example: set one specific SQLi rule to COUNT instead of BLOCK
+        # Override specific rules inside SQLi group to COUNT (for safe testing)
         rule_action_override {
-          name = "SQLi_BODY"   # Example rule name inside the group
+          name = "SQLi_BODY"
           action_to_use {
             count {}
           }
         }
+
+        rule_action_override {
+          name = "SQLi_QUERYARGUMENTS"
+          action_to_use {
+            count {}
+          }
+        }
+
+        # You can add more if needed
+        # rule_action_override {
+        #   name = "SQLiExtendedPatterns_BODY"
+        #   action_to_use { count {} }
+        # }
       }
     }
 
@@ -322,7 +337,9 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
     }
   }
 
-  # RULE 2: XSS + OWASP Common
+  # ==============================================
+  # RULE 2: XSS + Common OWASP Protection (with overrides to COUNT)
+  # ==============================================
   rule {
     name     = "XSSAndCommonOWASPProtection"
     priority = 20
@@ -335,6 +352,34 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
       managed_rule_group_statement {
         name        = "AWSManagedRulesCommonRuleSet"
         vendor_name = "AWS"
+
+        # Override XSS and common noisy rules to COUNT
+        rule_action_override {
+          name = "CrossSiteScripting_BODY"
+          action_to_use {
+            count {}
+          }
+        }
+
+        rule_action_override {
+          name = "CrossSiteScripting_QUERYARGUMENTS"
+          action_to_use {
+            count {}
+          }
+        }
+
+        rule_action_override {
+          name = "SizeRestrictions_BODY"
+          action_to_use {
+            count {}
+          }
+        }
+
+        # Add more if you see them in Sampled Requests
+        # rule_action_override {
+        #   name = "GenericRFI_BODY"
+        #   action_to_use { count {} }
+        # }
       }
     }
 
@@ -345,7 +390,9 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
     }
   }
 
-  # RULE 3: Brute Force – CUSTOM RATE LIMIT PER URI (/login only)
+  # ==============================================
+  # RULE 3: Brute Force Rate Limit (remains BLOCK)
+  # ==============================================
   rule {
     name     = "BruteForceRateLimit_LoginOnly"
     priority = 30
@@ -356,10 +403,9 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
 
     statement {
       rate_based_statement {
-        limit              = 100   # 100 requests in 5 minutes
+        limit              = 100
         aggregate_key_type = "IP"
 
-        # CUSTOM: Rate limit ONLY on /login path
         scope_down_statement {
           byte_match_statement {
             field_to_match {
@@ -383,7 +429,9 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
     }
   }
 
-  # RULE 4: Bot Control
+  # ==============================================
+  # RULE 4: Bot Control (remains BLOCK)
+  # ==============================================
   rule {
     name     = "BotControlProtection"
     priority = 40
@@ -412,7 +460,11 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
     sampled_requests_enabled   = true
   }
 
-  tags = { Name = "Layer7-Demo-Full-Stack" }
+  tags = {
+    Name        = "Layer7-Demo-Full-Stack"
+    Environment = "Demo"
+    Purpose     = "Testing"
+  }
 }
 
 # -----------------------------------------------------
