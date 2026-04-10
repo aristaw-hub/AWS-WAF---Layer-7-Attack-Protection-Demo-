@@ -1,6 +1,8 @@
 # AWS-WAF---Layer-7-Attack-Protection-Demo-
 AWS WAF - Layer 7 Attack Protection Demo with Terraform
 
+ PPT slides https://docs.google.com/presentation/d/13pjRqFctW0EzOL-BICDJOyjmQxLEc8boTEqTEq5QIl8/edit?usp=sharing . 
+ 
 A complete, ready-to-deploy Terraform project that demonstrates **AWS Web Application Firewall (WAF) v2** protection against common **Layer 7 (Application Layer) attacks**.
 
 This stack deploys a self-contained environment including:
