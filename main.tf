@@ -237,7 +237,7 @@ resource "random_string" "bucket_suffix" {
 
 resource "aws_s3_bucket" "waf_logs" {
   bucket = "aws-waf-logs-demo-layer7-${random_string.bucket_suffix.result}"
-
+  force_destroy = true
   tags = { Name = "waf-demo-logs" }
 }
 
