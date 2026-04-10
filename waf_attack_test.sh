@@ -5,7 +5,7 @@
 # =====================================================
 
 ALB_DNS="${1:-YOUR_ALB_DNS_HERE}"
-LOGFILE="waf_test_results_improved.log"
+LOGFILE="waf_test_results.log"
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
 
 if [ -z "$ALB_DNS" ] || [ "$ALB_DNS" = "YOUR_ALB_DNS_HERE" ]; then
