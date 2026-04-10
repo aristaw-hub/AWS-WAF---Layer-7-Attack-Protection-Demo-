@@ -6614,3 +6614,365 @@ Accept-Ranges: bytes
 
 ✅ Improved test completed at 2026-04-10 19:10:13
 Results saved to: waf_test_results_improved.log
+==================================================
+Improved WAF Attack Test Started at: 2026-04-10 19:31:00
+Target: http://waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com
+==================================================
+1. SQL Injection Tests
+
+=== SQLi - Classic Boolean ===
+Command: curl -X POST "http://waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com/login" -d "username=admin' OR '1'='1" -d "password=anything" -v -s
+* Host waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com:80 was resolved.
+* IPv6: (none)
+* IPv4: 13.229.39.246, 52.74.248.201
+*   Trying 13.229.39.246:80...
+* Connected to waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com (13.229.39.246) port 80
+> POST /login HTTP/1.1
+> Host: waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com
+> User-Agent: curl/8.5.0
+> Accept: */*
+> Content-Length: 43
+> Content-Type: application/x-www-form-urlencoded
+> 
+} [43 bytes data]
+< HTTP/1.1 403 Forbidden
+< Server: awselb/2.0
+< Date: Fri, 10 Apr 2026 11:30:59 GMT
+< Content-Type: text/html
+< Content-Length: 118
+< Connection: keep-alive
+< 
+{ [118 bytes data]
+* Connection #0 to host waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com left intact
+<html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+</body>
+</html>
+----------------------------------------
+
+=== SQLi - UNION ===
+Command: curl -X POST "http://waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com/login" -d "username=admin' UNION SELECT NULL,version()--" -v -s
+* Host waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com:80 was resolved.
+* IPv6: (none)
+* IPv4: 13.229.39.246, 52.74.248.201
+*   Trying 13.229.39.246:80...
+* Connected to waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com (13.229.39.246) port 80
+> POST /login HTTP/1.1
+> Host: waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com
+> User-Agent: curl/8.5.0
+> Accept: */*
+> Content-Length: 45
+> Content-Type: application/x-www-form-urlencoded
+> 
+} [45 bytes data]
+< HTTP/1.1 403 Forbidden
+< Server: awselb/2.0
+< Date: Fri, 10 Apr 2026 11:30:59 GMT
+< Content-Type: text/html
+< Content-Length: 118
+< Connection: keep-alive
+< 
+{ [118 bytes data]
+* Connection #0 to host waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com left intact
+<html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+</body>
+</html>
+----------------------------------------
+
+=== SQLi - Query String ===
+Command: curl -X GET "http://waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com/login?user=1' OR '1'='1&pass=1" -v -s
+* URL rejected: Malformed input to a URL function
+* Closing connection
+----------------------------------------
+2. Cross-Site Scripting (XSS) Tests
+
+=== XSS - Script Tag ===
+Command: curl -X POST "http://waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com/login" -d "comment=<script>alert(1)</script>" -v -s
+* Host waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com:80 was resolved.
+* IPv6: (none)
+* IPv4: 13.229.39.246, 52.74.248.201
+*   Trying 13.229.39.246:80...
+* Connected to waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com (13.229.39.246) port 80
+> POST /login HTTP/1.1
+> Host: waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com
+> User-Agent: curl/8.5.0
+> Accept: */*
+> Content-Length: 33
+> Content-Type: application/x-www-form-urlencoded
+> 
+} [33 bytes data]
+< HTTP/1.1 403 Forbidden
+< Server: awselb/2.0
+< Date: Fri, 10 Apr 2026 11:30:59 GMT
+< Content-Type: text/html
+< Content-Length: 118
+< Connection: keep-alive
+< 
+{ [118 bytes data]
+* Connection #0 to host waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com left intact
+<html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+</body>
+</html>
+----------------------------------------
+
+=== XSS - onerror ===
+Command: curl -X POST "http://waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com/login" -d "input=<img src=x onerror=alert(document.cookie)>" -v -s
+* Host waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com:80 was resolved.
+* IPv6: (none)
+* IPv4: 13.229.39.246, 52.74.248.201
+*   Trying 13.229.39.246:80...
+* Connected to waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com (13.229.39.246) port 80
+> POST /login HTTP/1.1
+> Host: waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com
+> User-Agent: curl/8.5.0
+> Accept: */*
+> Content-Length: 48
+> Content-Type: application/x-www-form-urlencoded
+> 
+} [48 bytes data]
+< HTTP/1.1 403 Forbidden
+< Server: awselb/2.0
+< Date: Fri, 10 Apr 2026 11:30:59 GMT
+< Content-Type: text/html
+< Content-Length: 118
+< Connection: keep-alive
+< 
+{ [118 bytes data]
+* Connection #0 to host waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com left intact
+<html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+</body>
+</html>
+----------------------------------------
+
+=== XSS - JavaScript URI ===
+Command: curl -X POST "http://waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com/login" -d "payload=javascript:alert(1)" -v -s
+* Host waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com:80 was resolved.
+* IPv6: (none)
+* IPv4: 13.229.39.246, 52.74.248.201
+*   Trying 13.229.39.246:80...
+* Connected to waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com (13.229.39.246) port 80
+> POST /login HTTP/1.1
+> Host: waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com
+> User-Agent: curl/8.5.0
+> Accept: */*
+> Content-Length: 27
+> Content-Type: application/x-www-form-urlencoded
+> 
+} [27 bytes data]
+< HTTP/1.1 403 Forbidden
+< Server: awselb/2.0
+< Date: Fri, 10 Apr 2026 11:30:59 GMT
+< Content-Type: text/html
+< Content-Length: 118
+< Connection: keep-alive
+< 
+{ [118 bytes data]
+* Connection #0 to host waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com left intact
+<html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+</body>
+</html>
+----------------------------------------
+
+=== XSS - SVG ===
+Command: curl -X POST "http://waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com/login" -d "comment=<svg/onload=alert(1)>" -v -s
+* Host waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com:80 was resolved.
+* IPv6: (none)
+* IPv4: 13.229.39.246, 52.74.248.201
+*   Trying 13.229.39.246:80...
+* Connected to waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com (13.229.39.246) port 80
+> POST /login HTTP/1.1
+> Host: waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com
+> User-Agent: curl/8.5.0
+> Accept: */*
+> Content-Length: 29
+> Content-Type: application/x-www-form-urlencoded
+> 
+} [29 bytes data]
+< HTTP/1.1 403 Forbidden
+< Server: awselb/2.0
+< Date: Fri, 10 Apr 2026 11:30:59 GMT
+< Content-Type: text/html
+< Content-Length: 118
+< Connection: keep-alive
+< 
+{ [118 bytes data]
+* Connection #0 to host waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com left intact
+<html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+</body>
+</html>
+----------------------------------------
+3. Brute Force / Credential Stuffing (150 attempts on /login)
+Sending 150 requests...
+403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 403 
+Brute force completed - expect 403 after ~100 requests
+4. Bot Traffic Tests
+
+=== Bot - Scanner-like UA ===
+Command: curl -I --user-agent "sqlmap/1.8.3" "http://waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com/" -v -s
+* Host waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com:80 was resolved.
+* IPv6: (none)
+* IPv4: 13.229.39.246, 52.74.248.201
+*   Trying 13.229.39.246:80...
+* Connected to waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com (13.229.39.246) port 80
+> HEAD / HTTP/1.1
+> Host: waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com
+> User-Agent: sqlmap/1.8.3
+> Accept: */*
+> 
+< HTTP/1.1 403 Forbidden
+< Server: awselb/2.0
+< Date: Fri, 10 Apr 2026 11:31:10 GMT
+< Content-Type: text/html
+< Content-Length: 118
+< Connection: keep-alive
+< 
+* Connection #0 to host waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com left intact
+HTTP/1.1 403 Forbidden
+Server: awselb/2.0
+Date: Fri, 10 Apr 2026 11:31:10 GMT
+Content-Type: text/html
+Content-Length: 118
+Connection: keep-alive
+
+----------------------------------------
+
+=== Bot - Nmap Scanner ===
+Command: curl -I --user-agent "Nmap Scripting Engine" "http://waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com/" -v -s
+* Host waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com:80 was resolved.
+* IPv6: (none)
+* IPv4: 13.229.39.246, 52.74.248.201
+*   Trying 13.229.39.246:80...
+* Connected to waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com (13.229.39.246) port 80
+> HEAD / HTTP/1.1
+> Host: waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com
+> User-Agent: Nmap Scripting Engine
+> Accept: */*
+> 
+< HTTP/1.1 403 Forbidden
+< Server: awselb/2.0
+< Date: Fri, 10 Apr 2026 11:31:10 GMT
+< Content-Type: text/html
+< Content-Length: 118
+< Connection: keep-alive
+< 
+* Connection #0 to host waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com left intact
+HTTP/1.1 403 Forbidden
+Server: awselb/2.0
+Date: Fri, 10 Apr 2026 11:31:10 GMT
+Content-Type: text/html
+Content-Length: 118
+Connection: keep-alive
+
+----------------------------------------
+
+=== Bot - Python Requests (common scraper) ===
+Command: curl -I --user-agent "python-requests/2.32" "http://waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com/" -v -s
+* Host waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com:80 was resolved.
+* IPv6: (none)
+* IPv4: 13.229.39.246, 52.74.248.201
+*   Trying 13.229.39.246:80...
+* Connected to waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com (13.229.39.246) port 80
+> HEAD / HTTP/1.1
+> Host: waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com
+> User-Agent: python-requests/2.32
+> Accept: */*
+> 
+< HTTP/1.1 403 Forbidden
+< Server: awselb/2.0
+< Date: Fri, 10 Apr 2026 11:31:10 GMT
+< Content-Type: text/html
+< Content-Length: 118
+< Connection: keep-alive
+< 
+* Connection #0 to host waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com left intact
+HTTP/1.1 403 Forbidden
+Server: awselb/2.0
+Date: Fri, 10 Apr 2026 11:31:10 GMT
+Content-Type: text/html
+Content-Length: 118
+Connection: keep-alive
+
+----------------------------------------
+
+=== Bot - No User-Agent ===
+Command: curl -I --user-agent "" "http://waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com/" -v -s
+* Host waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com:80 was resolved.
+* IPv6: (none)
+* IPv4: 13.229.39.246, 52.74.248.201
+*   Trying 13.229.39.246:80...
+* Connected to waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com (13.229.39.246) port 80
+> HEAD / HTTP/1.1
+> Host: waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com
+> Accept: */*
+> 
+< HTTP/1.1 403 Forbidden
+< Server: awselb/2.0
+< Date: Fri, 10 Apr 2026 11:31:11 GMT
+< Content-Type: text/html
+< Content-Length: 118
+< Connection: keep-alive
+< 
+* Connection #0 to host waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com left intact
+HTTP/1.1 403 Forbidden
+Server: awselb/2.0
+Date: Fri, 10 Apr 2026 11:31:11 GMT
+Content-Type: text/html
+Content-Length: 118
+Connection: keep-alive
+
+----------------------------------------
+
+=== Bot - Bad Bot Signature ===
+Command: curl -I --user-agent "Mozilla/5.0 (compatible; BadBot/2.0; +http://evil.com)" "http://waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com/" -v -s
+* Host waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com:80 was resolved.
+* IPv6: (none)
+* IPv4: 13.229.39.246, 52.74.248.201
+*   Trying 13.229.39.246:80...
+* Connected to waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com (13.229.39.246) port 80
+> HEAD / HTTP/1.1
+> Host: waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com
+> User-Agent: Mozilla/5.0 (compatible; BadBot/2.0; +http://evil.com)
+> Accept: */*
+> 
+< HTTP/1.1 200 OK
+< Date: Fri, 10 Apr 2026 11:31:11 GMT
+< Content-Type: text/html
+< Content-Length: 383
+< Connection: keep-alive
+< Server: nginx/1.28.2
+< Last-Modified: Fri, 10 Apr 2026 07:52:58 GMT
+< ETag: "69d8ac5a-17f"
+< Accept-Ranges: bytes
+< 
+* Connection #0 to host waf-demo-alb-1395133261.ap-southeast-1.elb.amazonaws.com left intact
+HTTP/1.1 200 OK
+Date: Fri, 10 Apr 2026 11:31:11 GMT
+Content-Type: text/html
+Content-Length: 383
+Connection: keep-alive
+Server: nginx/1.28.2
+Last-Modified: Fri, 10 Apr 2026 07:52:58 GMT
+ETag: "69d8ac5a-17f"
+Accept-Ranges: bytes
+
+----------------------------------------
+
+✅ Improved test completed at 2026-04-10 19:31:11
+Results saved to: waf_test_results_improved.log

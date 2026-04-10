@@ -283,18 +283,23 @@ resource "aws_s3_bucket_policy" "waf_logs" {
 # 6. WAF WEB ACL (with custom rate-limit per URI + exclusions)
 # -----------------------------------------------------
 
+
+# =====================================================
+# AWS WAF v2 Web ACL - Layer 7 Protection Demo
+# Attached to ALB (Regional scope)
+# =====================================================
+
 resource "aws_wafv2_web_acl" "layer7_demo" {
   name        = "demo-layer7-full-stack"
   description = "Layer7 Demo SQLi XSS BruteForce Bots ALB"
-  scope       = "REGIONAL"   # Required for ALB / API Gateway / etc.
+  scope       = "REGIONAL"
 
-  # Default action if no rules match
   default_action {
     allow {}
   }
 
   # ==============================================
-  # RULE 10: SQL Injection - BLOCK
+  # RULE 10: SQL Injection Protection (BLOCK - runs first)
   # ==============================================
   rule {
     name     = "SQLInjectionProtection"
@@ -319,7 +324,7 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
   }
 
   # ==============================================
-  # RULE 20: XSS + Common OWASP - BLOCK
+  # RULE 20: XSS + Common OWASP Protection (BLOCK)
   # ==============================================
   rule {
     name     = "XSSAndCommonOWASPProtection"
@@ -344,7 +349,7 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
   }
 
   # ==============================================
-  # RULE 30: Brute Force Rate Limit (/login only)
+  # RULE 30: Brute Force Rate Limit (only on /login)
   # ==============================================
   rule {
     name     = "BruteForceRateLimit_LoginOnly"
@@ -356,16 +361,20 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
 
     statement {
       rate_based_statement {
-        limit              = 100
-        aggregate_key_type = "IP"
+        limit                 = 100
+        aggregate_key_type    = "IP"
+        evaluation_window_sec = 300   # 5 minutes
 
+        # Only apply this rate limit to requests starting with /login
         scope_down_statement {
           byte_match_statement {
             positional_constraint = "STARTS_WITH"
             search_string         = "/login"
+
             field_to_match {
               uri_path {}
             }
+
             text_transformation {
               priority = 0
               type     = "NONE"
@@ -383,7 +392,7 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
   }
 
   # ==============================================
-  # RULE 40: Bot Control - BLOCK (last)
+  # RULE 40: Bot Control Protection (runs last)
   # ==============================================
   rule {
     name     = "BotControlProtection"
@@ -407,7 +416,7 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
     }
   }
 
-  # Top-level visibility_config (required for the Web ACL itself)
+  # Required top-level visibility config for the Web ACL
   visibility_config {
     cloudwatch_metrics_enabled = true
     metric_name                = "demo-layer7-full-stack"
@@ -415,8 +424,7 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
   }
 
   tags = {
-    Name        = "Layer7-Demo"
-    Environment = "Demo"
+    Name = "Layer7-Demo"
   }
 }
 
