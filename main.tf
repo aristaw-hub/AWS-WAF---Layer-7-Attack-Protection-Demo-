@@ -282,17 +282,19 @@ resource "aws_s3_bucket_policy" "waf_logs" {
 # -----------------------------------------------------
 # 6. WAF WEB ACL (with custom rate-limit per URI + exclusions)
 # -----------------------------------------------------
+
 resource "aws_wafv2_web_acl" "layer7_demo" {
   name        = "demo-layer7-full-stack"
-  description = "Demo Layer 7 WAF protection for SQLi XSS Brute-Force on login and Bots"
-  scope       = "REGIONAL"
+  description = "Layer7 Demo SQLi XSS BruteForce Bots ALB"
+  scope       = "REGIONAL"   # Required for ALB / API Gateway / etc.
 
+  # Default action if no rules match
   default_action {
     allow {}
   }
 
   # ==============================================
-  # RULE 1: SQL Injection - NOW IN BLOCK MODE
+  # RULE 10: SQL Injection - BLOCK
   # ==============================================
   rule {
     name     = "SQLInjectionProtection"
@@ -306,17 +308,6 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
       managed_rule_group_statement {
         name        = "AWSManagedRulesSQLiRuleSet"
         vendor_name = "AWS"
-
-        # Remove COUNT overrides → Now actually BLOCKs
-        # (Comment out or delete these blocks)
-        # rule_action_override {
-        #   name = "SQLi_BODY"
-        #   action_to_use { count {} }
-        # }
-        # rule_action_override {
-        #   name = "SQLi_QUERYARGUMENTS"
-        #   action_to_use { count {} }
-        # }
       }
     }
 
@@ -328,7 +319,7 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
   }
 
   # ==============================================
-  # RULE 2: XSS + Common OWASP - NOW IN BLOCK MODE
+  # RULE 20: XSS + Common OWASP - BLOCK
   # ==============================================
   rule {
     name     = "XSSAndCommonOWASPProtection"
@@ -342,20 +333,6 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
       managed_rule_group_statement {
         name        = "AWSManagedRulesCommonRuleSet"
         vendor_name = "AWS"
-
-        # Remove COUNT overrides → Now actually BLOCKs
-        # rule_action_override {
-        #   name = "CrossSiteScripting_BODY"
-        #   action_to_use { count {} }
-        # }
-        # rule_action_override {
-        #   name = "CrossSiteScripting_QUERYARGUMENTS"
-        #   action_to_use { count {} }
-        # }
-        # rule_action_override {
-        #   name = "SizeRestrictions_BODY"
-        #   action_to_use { count {} }
-        # }
       }
     }
 
@@ -365,8 +342,9 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
       sampled_requests_enabled   = true
     }
   }
+
   # ==============================================
-  # RULE 3: Brute Force Rate Limit (remains BLOCK)
+  # RULE 30: Brute Force Rate Limit (/login only)
   # ==============================================
   rule {
     name     = "BruteForceRateLimit_LoginOnly"
@@ -383,11 +361,11 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
 
         scope_down_statement {
           byte_match_statement {
+            positional_constraint = "STARTS_WITH"
+            search_string         = "/login"
             field_to_match {
               uri_path {}
             }
-            positional_constraint = "CONTAINS"
-            search_string         = "/login"
             text_transformation {
               priority = 0
               type     = "NONE"
@@ -405,7 +383,7 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
   }
 
   # ==============================================
-  # RULE 4: Bot Control (remains BLOCK)
+  # RULE 40: Bot Control - BLOCK (last)
   # ==============================================
   rule {
     name     = "BotControlProtection"
@@ -429,16 +407,16 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
     }
   }
 
+  # Top-level visibility_config (required for the Web ACL itself)
   visibility_config {
     cloudwatch_metrics_enabled = true
-    metric_name                = "DemoLayer7FullStack"
+    metric_name                = "demo-layer7-full-stack"
     sampled_requests_enabled   = true
   }
 
   tags = {
-    Name        = "Layer7-Demo-Full-Stack"
+    Name        = "Layer7-Demo"
     Environment = "Demo"
-    Purpose     = "Testing"
   }
 }
 
