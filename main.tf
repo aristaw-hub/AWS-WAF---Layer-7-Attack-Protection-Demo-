@@ -292,14 +292,14 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
   }
 
   # ==============================================
-  # RULE 1: SQL Injection Protection (with overrides to COUNT)
+  # RULE 1: SQL Injection - NOW IN BLOCK MODE
   # ==============================================
   rule {
     name     = "SQLInjectionProtection"
     priority = 10
 
     override_action {
-      none {}   # Important: keep none so individual rule overrides work
+      none {}
     }
 
     statement {
@@ -307,24 +307,14 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
         name        = "AWSManagedRulesSQLiRuleSet"
         vendor_name = "AWS"
 
-        # Override specific rules inside SQLi group to COUNT (for safe testing)
-        rule_action_override {
-          name = "SQLi_BODY"
-          action_to_use {
-            count {}
-          }
-        }
-
-        rule_action_override {
-          name = "SQLi_QUERYARGUMENTS"
-          action_to_use {
-            count {}
-          }
-        }
-
-        # You can add more if needed
+        # Remove COUNT overrides → Now actually BLOCKs
+        # (Comment out or delete these blocks)
         # rule_action_override {
-        #   name = "SQLiExtendedPatterns_BODY"
+        #   name = "SQLi_BODY"
+        #   action_to_use { count {} }
+        # }
+        # rule_action_override {
+        #   name = "SQLi_QUERYARGUMENTS"
         #   action_to_use { count {} }
         # }
       }
@@ -338,7 +328,7 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
   }
 
   # ==============================================
-  # RULE 2: XSS + Common OWASP Protection (with overrides to COUNT)
+  # RULE 2: XSS + Common OWASP - NOW IN BLOCK MODE
   # ==============================================
   rule {
     name     = "XSSAndCommonOWASPProtection"
@@ -353,31 +343,17 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
         name        = "AWSManagedRulesCommonRuleSet"
         vendor_name = "AWS"
 
-        # Override XSS and common noisy rules to COUNT
-        rule_action_override {
-          name = "CrossSiteScripting_BODY"
-          action_to_use {
-            count {}
-          }
-        }
-
-        rule_action_override {
-          name = "CrossSiteScripting_QUERYARGUMENTS"
-          action_to_use {
-            count {}
-          }
-        }
-
-        rule_action_override {
-          name = "SizeRestrictions_BODY"
-          action_to_use {
-            count {}
-          }
-        }
-
-        # Add more if you see them in Sampled Requests
+        # Remove COUNT overrides → Now actually BLOCKs
         # rule_action_override {
-        #   name = "GenericRFI_BODY"
+        #   name = "CrossSiteScripting_BODY"
+        #   action_to_use { count {} }
+        # }
+        # rule_action_override {
+        #   name = "CrossSiteScripting_QUERYARGUMENTS"
+        #   action_to_use { count {} }
+        # }
+        # rule_action_override {
+        #   name = "SizeRestrictions_BODY"
         #   action_to_use { count {} }
         # }
       }
@@ -389,7 +365,6 @@ resource "aws_wafv2_web_acl" "layer7_demo" {
       sampled_requests_enabled   = true
     }
   }
-
   # ==============================================
   # RULE 3: Brute Force Rate Limit (remains BLOCK)
   # ==============================================
