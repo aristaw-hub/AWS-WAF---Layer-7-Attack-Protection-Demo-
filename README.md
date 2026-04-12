@@ -1,11 +1,13 @@
 # AWS-WAF---Layer-7-Attack-Protection-Demo-
+
 AWS WAF - Layer 7 Attack Protection Demo with Terraform
 
- PPT slides https://docs.google.com/presentation/d/13pjRqFctW0EzOL-BICDJOyjmQxLEc8boTEqTEq5QIl8/edit?usp=sharing . 
- 
+PPT slides https://docs.google.com/presentation/d/13pjRqFctW0EzOL-BICDJOyjmQxLEc8boTEqTEq5QIl8/edit?usp=sharing
+
 A complete, ready-to-deploy Terraform project that demonstrates **AWS Web Application Firewall (WAF) v2** protection against common **Layer 7 (Application Layer) attacks**.
 
 This stack deploys a self-contained environment including:
+
 - VPC with public subnets
 - Application Load Balancer (ALB)
 - EC2 instance running a simple Nginx demo login page
@@ -25,7 +27,7 @@ This stack deploys a self-contained environment including:
 ## Architecture
 
 ![Architecture Diagram](docs/architecture.png)  
-*(Add your diagram image here after uploading it to the `docs/` folder)*
+_(Add your diagram image here after uploading it to the `docs/` folder)_
 
 **Traffic Flow**:  
 Internet → **AWS WAF** → **Application Load Balancer** → **EC2 (Nginx Demo)**
@@ -54,6 +56,7 @@ terraform apply -auto-approve
 ```
 
 After deployment, Terraform will output:
+
 - `alb_dns_name` → Use this to test attacks
 - `s3_log_bucket` → Where WAF logs are stored
 
@@ -67,6 +70,7 @@ chmod +x waf_attack_test.sh
 ```
 
 Example:
+
 ```bash
 ./waf_attack_test.sh waf-demo-alb-1234567890.ap-southeast-1.elb.amazonaws.com
 ```
@@ -87,12 +91,12 @@ Example:
 
 ## Testing the Protections
 
-| Attack Type              | Expected Behavior                  | Verification Location                  |
-|--------------------------|------------------------------------|----------------------------------------|
-| SQL Injection            | COUNT or BLOCK                     | WAF Sampled Requests + S3 logs         |
-| XSS                      | COUNT or BLOCK                     | WAF Sampled Requests                   |
-| Brute Force (/login)     | BLOCK after 100 requests / 5 min   | Brute force test script                |
-| Bot Traffic              | BLOCK                              | BotControlProtection rule              |
+| Attack Type          | Expected Behavior                | Verification Location          |
+| -------------------- | -------------------------------- | ------------------------------ |
+| SQL Injection        | COUNT or BLOCK                   | WAF Sampled Requests + S3 logs |
+| XSS                  | COUNT or BLOCK                   | WAF Sampled Requests           |
+| Brute Force (/login) | BLOCK after 100 requests / 5 min | Brute force test script        |
+| Bot Traffic          | BLOCK                            | BotControlProtection rule      |
 
 **Tip**: While learning, keep SQLi and XSS rules in **COUNT** mode (already configured in Terraform). Switch to **BLOCK** when ready for production-like behavior.
 
