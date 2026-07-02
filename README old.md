@@ -144,3 +144,54 @@ Created by Arista
 ---
 
 **Repository**: https://github.com/aristaw-hub/AWS-WAF---Layer-7-Attack-Protection-Demo-.git
+
+
+Sample terraform apply Output from previous development
+
+
+aws_lb.demo: Creation complete after 2m49s [id=arn:aws:elasticloadbalancing:ap-southeast-1:255945442255:loadbalancer/app/waf-demo-alb/3b0dd4c8370d9b72]
+aws_lb_listener.http: Creating...
+aws_wafv2_web_acl_association.demo: Creating...
+aws_lb_listener.http: Creation complete after 0s [id=arn:aws:elasticloadbalancing:ap-southeast-1:255945442255:listener/app/waf-demo-alb/3b0dd4c8370d9b72/6610f0ceb934889c]
+aws_wafv2_web_acl_association.demo: Creation complete after 2s [id=arn:aws:wafv2:ap-southeast-1:255945442255:regional/webacl/demo-layer7-full-stack/4e49476e-4d0f-4406-90a1-c56769734a03,arn:aws:elasticloadbalancing:ap-southeast-1:255945442255:loadbalancer/app/waf-demo-alb/3b0dd4c8370d9b72]
+
+Apply complete! Resources: 21 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+alb_dns_name = "waf-demo-alb-1800449406.ap-southeast-1.elb.amazonaws.com"
+next_steps = <<EOT
+1. Run: terraform apply -auto-approve
+2. Wait ~2 minutes for ALB + WAF association.
+3. Copy the alb_dns_name and start testing with the commands above.
+4. View logs: S3 console → your bucket → AWSLogs/<account-id>/
+5. Monitor: WAF console → Rules / Sampled requests (real-time blocked attacks).
+6. When finished: terraform destroy
+
+EOT
+s3_log_bucket = "aws-waf-logs-demo-layer7-8b9yt1pv"
+test_commands = <<EOT
+# After terraform apply, run these:
+
+# Normal traffic
+curl -I http://waf-demo-alb-1800449406.ap-southeast-1.elb.amazonaws.com/
+
+# SQL Injection test
+curl -X POST "http://waf-demo-alb-1800449406.ap-southeast-1.elb.amazonaws.com/login" -d "username=admin' OR '1'='1"
+
+# XSS test
+curl -X POST "http://waf-demo-alb-1800449406.ap-southeast-1.elb.amazonaws.com/login" -d "comment=<script>alert(1)</script>"
+
+# Brute force test (run in loop)
+for i in {1..150}; do curl -X POST "http://waf-demo-alb-1800449406.ap-southeast-1.elb.amazonaws.com/login" -d "user=test&pass=guess$i" --silent --output /dev/null; done
+
+# Bot traffic test
+curl -I --user-agent "Mozilla/5.0 (compatible; BadBot/1.0)" http://waf-demo-alb-1800449406.ap-southeast-1.elb.amazonaws.com/
+
+Check blocked requests in:
+→ AWS Console → WAF & Shield → Web ACLs → demo-layer7-full-stack → Sampled requests
+→ S3 bucket: aws-waf-logs-demo-layer7-8b9yt1pv
+
+EOT
+web_acl_id = "4e49476e-4d0f-4406-90a1-c56769734a03"
+sus@Vivobook-X409UA:~/AWS-WAF---Layer-7-Attack-Protection-Demo-$
