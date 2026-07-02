@@ -27,23 +27,24 @@ https://docs.google.com/presentation/d/13pjRqFctW0EzOL-BICDJOyjmQxLEc8boTEqTEq5Q
 
 ---
 
-# Demo Overview
+## Demo Overview
 
-This project demonstrates protection against:
+This project demonstrates AWS WAF protection against:
 
-✅ SQL Injection (SQLi)
+- ✅ SQL Injection (SQLi)
+- ✅ Cross-Site Scripting (XSS)
+- ✅ Common OWASP web application attacks
+- ✅ Brute Force login attempts (rate limiting on `/login`)
+- ✅ Credential Stuffing mitigation through request rate limiting
+- ✅ Bot Traffic using AWS Bot Control
+- ✅ Basic Layer 7 HTTP flood mitigation using rate-based rules and bot detection
 
-✅ Cross Site Scripting (XSS)
+These protections are implemented using four AWS WAF rules:
 
-✅ OWASP Common Exploits
-
-✅ Credential Stuffing
-
-✅ Brute Force Login Attempts
-
-✅ Bot Traffic
-
-✅ Layer 7 HTTP Flood attacks
+1. **SQLInjectionProtection**
+2. **XSSAndCommonOWASPProtection**
+3. **BruteForceRateLimit_LoginOnly**
+4. **BotControlProtection**
 
 All infrastructure is deployed automatically using Terraform.
 
