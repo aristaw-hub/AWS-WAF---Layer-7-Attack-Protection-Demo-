@@ -471,6 +471,9 @@ MIT License
 
 GitHub
 
-[https://github.com/aristaw-hub](https://github.com/aristaw-hub/AWS-WAF---Layer-7-Attack-Protection-Demo-)
+[https://github.com/aristaw-hub](https://github.com/aristaw-hub/)
+
+Github repository readme
+[https://github.com/aristaw-hub/AWS-WAF---Layer-7-Attack-Protection-Demo-/edit/main/README.md](https://github.com/aristaw-hub/AWS-WAF---Layer-7-Attack-Protection-Demo-/edit/main/README.md) 
 
 Happy Learning!
