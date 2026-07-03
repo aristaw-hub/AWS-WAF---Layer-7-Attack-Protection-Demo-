@@ -23,7 +23,7 @@ This repository is designed for:
 
 Project presentation slides:
 
-https://docs.google.com/presentation/d/13pjRqFctW0EzOL-BICDJOyjmQxLEc8boTEqTEq5QIl8/edit?usp=sharing
+[AWS WAFv2 Layer 7 Attack Protection Demo with Terraform Deloyment](https://docs.google.com/presentation/d/1wJm_4rloH-AA5AeRdAbEVBDOn2aE8--Pr4UYQn15Qnk/)
 
 ---
 
